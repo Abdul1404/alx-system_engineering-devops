@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Bash script that configures a new Ubuntu machine
+# this script installs Nginx, sets up a basic web page, and starts
+#the web server, making the machine ready to serve HTTP traffic.
 
 sudo apt-get update
 sudo apt-get -y install nginx
-
-echo "Hello World!" > /var/www/index/index.html
-sudo systemctl start nginx
+ufw allow 'NGINX HTTP'
+echo "Hello World!" > /var/www/html/index.html
+service nginx start
