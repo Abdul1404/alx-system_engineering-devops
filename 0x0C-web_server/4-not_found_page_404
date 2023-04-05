@@ -15,18 +15,16 @@ config=\
         root /var/www/html;
         index index.html index.htm index.nginx-debian.html;
         server_name _;
-        error_page 404 /404.html
+        error_page 404 /404.html;
+        location /redirect_me {
+                #tests if the file that was requested matches 'redirect_me'
+                # then redirects it with a 301/permanent flag
+                 return 301 https://intranet.alxswe.com/;
+        }
         location / {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404
-           .
                 try_files \$uri \$uri/ =404;
-        }
-        location /redirect_me) {
-                #tests if the file that was requested matches 'redire
-ct_me'
-                # then redirects it with a 301/permanent flag
-                 return 301 https://intranet.alxswe.com/;
         }
 }"
 #copies the content of config into default
