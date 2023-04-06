@@ -14,7 +14,6 @@ haproxy_config=\
 
 backend web-backend
         balance roundrobin
-        mode http
         server 135370-web-01 100.25.155.86:80 check
         server 135370-web-02 52.207.207.54:80 check
 "
