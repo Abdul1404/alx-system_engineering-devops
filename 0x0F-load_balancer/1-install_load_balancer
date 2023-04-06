@@ -1,44 +1,52 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 # Bash script that configures a new Ubuntu machine
-# this script installs Nginx, sets up a basic web page, and starts
-#the web server, making the machine ready to serve HTTP traffic.
-#Also creates a custom http response header.
-#Also installs and configures HAProxy.
-sudo apt-get update
-sudo apt-get -y install nginx
-sudo apt-get -y install haproxy
-ufw allow 'NGINX HTTP' #allows incomming http traffic on port 80
-mkdir -p /var/www/html/
-echo "Hello World!" > /var/www/html/index.html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-config=\
-"server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        add_header X-Served-By \$hostname;
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        error_page 404 /404.html;
-        location /404.html {
-                 internal;
-        }
-        location /redirect_me {
-                #tests if the file that was requested matches 'redirect_me'
-                # then redirects it with a 301/permanent flag
-                return 301 https://intranet.alxswe.com/;
-        }
-        location / {
-                # First attempt to serve request as file, then
-                # as directory, then fall back to displaying a 404
-                try_files \$uri \$uri/ =404;
-        }
-}"
+# installs and configures HAProxy.
+apt-get update
+apt-get -y install --no-install-recommends software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-2.7
+apt-get -y install haproxy=2.7.\*
 haproxy_config=\
+"frontend web-frontend
+        bind *:80
+        mode http
+        default_backend web-backend
+
+backend web-backend
+        balance roundrobin
+        mode http
+        server 135370-web-01 100.25.155.86:80 check
+        server 135370-web-02 52.207.207.54:80 check
 "
-#copies the content of config into default
-sudo bash -c "echo -e '$config' > /etc/nginx/sites-available/default"
-#checks if nginx is already running if true restart, otherwise start.
-sudo service nginx restart
-sudo service haproxy restart
+#checks if haproxy is enabled at boot time==>
+INIT_FILE='/etc/default/haproxy'
+#check if the file exists, if not creates it
+[ -f "$INIT_FILE" ] || touch "$INIT_FILE"
+#check if ENABLED is 0 or 1,
+if [ "$(grep -Eco '^ENABLED=[01]$' < $INIT_FILE)" -gt 0 ];
+then
+  sed -i 's/^ENABLED=0$/ENABLED=1/' "$INIT_FILE"
+else
+  echo 'ENABLED=1' >> $INIT_FILE
+fi
+
+#checks if the configuration already exists
+if grep -q "backend web-backend" /etc/haproxy/haproxy.cfg;
+then
+    #checks if haproxy is already running if true restart, otherwise start.
+    if [ "$(pgrep -c haproxy)" -le 0 ];
+    then
+	sudo service haproxy start
+    else
+	sudo service haproxy restart
+    fi
+else
+    sudo bash -c "echo -en '$haproxy_config' >> /etc/haproxy/haproxy.cfg"
+    #checks if haproxy is already running if true restart, otherwise start.
+    if [ "$(pgrep -c haproxy)" -le 0 ];
+    then
+	sudo service haproxy start
+    else
+	sudo service haproxy restart
+    fi
+fi
