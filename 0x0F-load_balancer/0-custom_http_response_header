@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2154
+# Bash script that configures a new Ubuntu machine
+# this script installs Nginx, sets up a basic web page, and starts
+#the web server, making the machine ready to serve HTTP traffic.
+#And also creates a custom http response header.
+
+sudo apt-get update
+sudo apt-get -y install nginx
+ufw allow 'NGINX HTTP' #allows incomming http traffic on port 80
+mkdir -p /var/www/html/
+echo "Hello World!" > /var/www/html/index.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+config=\
+"server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        add_header X-Served-By \$hostname;
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+        error_page 404 /404.html;
+        location /404.html {
+                 internal;
+        }
+        location /redirect_me {
+                #tests if the file that was requested matches 'redirect_me'
+                # then redirects it with a 301/permanent flag
+                return 301 https://intranet.alxswe.com/;
+        }
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404
+                try_files \$uri \$uri/ =404;
+        }
+}"
+#copies the content of config into default
+sudo bash -c "echo -e '$config' > /etc/nginx/sites-available/default"
+#checks if nginx is already running if true restart, otherwise start.
+if [ "$(pgrep -c nginx)" -le 0 ];
+then
+    sudo service nginx start
+else
+    sudo service nginx restart
+fi
