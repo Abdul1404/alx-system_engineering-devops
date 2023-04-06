@@ -15,9 +15,10 @@ haproxy_config=\
 backend web-backend
         balance roundrobin
         mode http
-        server web-01 100.25.155.86:80 check
-        server web-02 52.207.207.54:80 check
+        server 135370-web-01 100.25.155.86:80 check
+        server 135370-web-02 52.207.207.54:80 check
 "
+
 #checks if haproxy is enabled at boot time==>
 INIT_FILE='/etc/default/haproxy'
 #check if the file exists, if not creates it
@@ -29,24 +30,19 @@ then
 else
   echo 'ENABLED=1' >> $INIT_FILE
 fi
-
-#checks if the configuration already exists
-if grep -q "backend web-backend" /etc/haproxy/haproxy.cfg;
+if ! test -e /etc/haproxy/haproxy.cfg;
 then
-    #checks if haproxy is already running if true restart, otherwise start.
-    if [ "$(pgrep -c haproxy)" -le 0 ];
-    then
-	sudo service haproxy start
-    else
-	sudo service haproxy restart
-    fi
-else
+    touch /etc/haproxy/haproxy.cfg
+fi
+#checks if the configuration already exists
+if ! (grep -q "backend web-backend" /etc/haproxy/haproxy.cfg) ;
+then
     sudo bash -c "echo -en '$haproxy_config' >> /etc/haproxy/haproxy.cfg"
-    #checks if haproxy is already running if true restart, otherwise start.
-    if [ "$(pgrep -c haproxy)" -le 0 ];
-    then
-	sudo service haproxy start
-    else
-	sudo service haproxy restart
-    fi
+fi
+#checks if haproxy is already running if true restart, otherwise start.
+if [ "$(pgrep -c haproxy)" -le 0 ];
+then
+    sudo service haproxy start
+else
+    sudo service haproxy restart
 fi
