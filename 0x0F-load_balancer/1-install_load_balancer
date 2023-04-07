@@ -3,40 +3,36 @@
 # Bash script that configures a new Ubuntu machine
 # installs and configures HAProxy.
 apt-get update
-apt-get -y install --no-install-recommends software-properties-common
-add-apt-repository -y ppa:vbernat/haproxy-2.7
-apt-get -y install haproxy=2.7.\*
+apt-get -y install haproxy
 haproxy_config=\
-"frontend web-frontend
+"
+frontend web-frontend
         bind *:80
         mode http
         default_backend web-backend
-
 backend web-backend
         balance roundrobin
-        server 135370-web-01 100.25.155.86:80 check
+        server 135370-web-01 54.166.170.221:80 check
         server 135370-web-02 52.207.207.54:80 check
 "
 
 #checks if haproxy is enabled at boot time==>
 INIT_FILE='/etc/default/haproxy'
+CONFIG='/etc/haproxy/haproxy.cfg'
 #check if the file exists, if not creates it
 [ -f "$INIT_FILE" ] || touch "$INIT_FILE"
 #check if ENABLED is 0 or 1,
 if [ "$(grep -Eco '^ENABLED=[01]$' < $INIT_FILE)" -gt 0 ];
 then
-  sed -i 's/^ENABLED=0$/ENABLED=1/' "$INIT_FILE"
+    sed -i 's/^ENABLED=0$/ENABLED=1/' "$INIT_FILE"
 else
   echo 'ENABLED=1' >> $INIT_FILE
 fi
-if ! test -e /etc/haproxy/haproxy.cfg;
-then
-    touch /etc/haproxy/haproxy.cfg
-fi
+[ -f "$CONFIG" ] || touch "$CONFIG"
 #checks if the configuration already exists
-if ! (grep -q "backend web-backend" /etc/haproxy/haproxy.cfg) ;
+if ! (grep -q "backend web-backend" "$CONFIG");
 then
-    sudo bash -c "echo -en '$haproxy_config' >> /etc/haproxy/haproxy.cfg"
+    sudo bash -c "echo -en '$haproxy_config' >> '$CONFIG'"
 fi
 #checks if haproxy is already running if true restart, otherwise start.
 if [ "$(pgrep -c haproxy)" -le 0 ];
