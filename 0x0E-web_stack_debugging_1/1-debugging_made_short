@@ -2,4 +2,4 @@
 #wrote a script that makes nginx listen on port 80
 sudo sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
 sudo service nginx reload
-sudo echo 'fakepid' > /run/nginx.pid
+sudo bash -c "echo 'fakepid' > /run/nginx.pid"
