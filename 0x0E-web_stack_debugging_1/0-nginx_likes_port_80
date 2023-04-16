@@ -5,8 +5,7 @@ sudo apt-get -y install ufw
 #sudo apt-get upgrade iptables
 sudo ufw enable
 sudo ufw allow 'NGINX HTTP'
-config=\
-"server {
+config="server {
         listen 80 default_server;
         listen [::]:80 default_server;
         root /usr/share/nginx/html;
