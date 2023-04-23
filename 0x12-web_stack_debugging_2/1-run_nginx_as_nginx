@@ -2,5 +2,6 @@
 #A script Fix this container so that Nginx is running as the nginx user.
 pkill  apache2
 sed -Ei 's/(listen (\[::\]:)?80) /\180 /' /etc/nginx/sites-enabled/default
+chmod 644 /etc/nginx/nginx.conf
 sed -Ei 's/\s*#?\s*user .*/user nginx;/' /etc/nginx/nginx.conf
 service nginx restart
