@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Bash script that accepts one argument the and runs the whoami
 #command under the user passed as an argument
-su "$1"
-whoami
-su root
+su "$1" -s /bin/bash -c 'whoami'
+#switches the current user to the user specified in the first comman
+#d-line argument ($1) and runs the command whoami as that user.
+
