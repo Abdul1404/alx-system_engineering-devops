@@ -16,9 +16,9 @@ if __name__ == "__main__":
         ID = int(sys.argv[1])
         if ID > 0:
             # Get all todos
-            todos_req = requests.get(f"{API}/todos").json()
+            todos_req = requests.get("{}/todos".format(API)).json()
             # gets the user with the id provided
-            user_req = requests.get(f"{API}/users/{ID}").json()
+            user_req = requests.get("{}/users/{}".format(API, ID)).json()
             # retrieve name of user
             user_name = user_req.get('name')
             # get a list of all todos of the user
@@ -39,4 +39,4 @@ if __name__ == "__main__":
                       )
                   )
             for task in completed_todo:
-                print(f" \t{task.get('title')}")
+                print(" \t{}".format(task.get('title')))
