@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-# Bash script that accepts one argument the and runs the whoami
-#command under the user passed as an argument
-su "$1"
-whoami
