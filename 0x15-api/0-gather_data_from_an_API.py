@@ -39,4 +39,4 @@ if __name__ == "__main__":
                       )
                   )
             for task in completed_todo:
-                print(" \t{}".format(task.get('title')))
+                print("\t {}".format(task.get('title')))
