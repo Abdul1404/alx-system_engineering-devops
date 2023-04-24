@@ -31,7 +31,7 @@ if __name__ == "__main__":
             for todo in user_todos:
                 if todo.get('completed'):
                     completed_todo.append(todo)
-            print("Employee {} is done with tasks({}/{})"
+            print("Employee {} is done with tasks({}/{}):"
                   .format(
                       user_name,
                       len(completed_todo),
