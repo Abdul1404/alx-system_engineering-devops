@@ -21,7 +21,7 @@ if __name__ == "__main__":
             # gets the user with the id provided
             user_req = requests.get("{}/users/{}".format(API, ID)).json()
             # retrieve name of user
-            user_name = user_req.get('name')
+            user_name = user_req.get('username')
             # get a list of all todos of the user
             user_todos = []
             for todo in todos_req:
