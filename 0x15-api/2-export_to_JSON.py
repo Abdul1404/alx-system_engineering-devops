@@ -6,6 +6,7 @@ Usage:
 Author:
     Abdulsalam Abdulsomad .A. - April 24th, 2023.
 '''
+import json
 import requests
 import sys
 
@@ -37,6 +38,6 @@ if __name__ == "__main__":
                     user_todos
                 ))
                 user_data = {
-                    "{}".format(id): user_data
+                    "{}".format(ID): user_data
                 }
                 json.dump(user_data, json_file)

@@ -10,7 +10,6 @@ import json
 import requests
 
 
-
 API = "https://jsonplaceholder.typicode.com"
 if __name__ == '__main__':
     users_res = requests.get('{}/users'.format(API)).json()
