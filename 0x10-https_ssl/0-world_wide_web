@@ -1,1 +1,21 @@
-#!/usr/bin
+#!/usr/bin/env bash
+#A Bash script that displays information about subdomains
+function digNdisplay() {
+subdomains=(www lb-01 web-01 web-02)
+if [ $# -gt 1 ]
+then
+    dig "$2.$1" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v sd="$2" 'BEGIN { FS = " " } ; { print "The subdomain " sd " is a " $4 " record and points to " $5 }'
+else
+    for subdomain in "${subdomains[@]}"
+    do
+	dig "$subdomain.$1" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v sd="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " sd " is a " $4 " record and points to " $5 }'
+    done
+fi
+}
+if [ $# -gt 1 ]
+then
+    digNdisplay "$1" "$2"
+else
+    digNdisplay "$1"
+fi
+
