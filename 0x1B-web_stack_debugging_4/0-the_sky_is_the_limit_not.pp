@@ -1,4 +1,4 @@
-  # Increases the file limit by nullifying the set default using
+# Increases the file limit by nullifying the set default using
 exec { 'fix-limit' :
   command => 'sed -i s/ULIMIT/#ULIMIT/g /etc/default/nginx',
   path    => '/bin/',
