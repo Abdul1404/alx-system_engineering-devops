@@ -2,7 +2,7 @@
 # shellcheck disable=SC2154
 # Bash script that configures a new Ubuntu machine
 # installs and configures HAProxy.
-apt-get update
+apt-get -y update
 apt-get -y install haproxy
 haproxy_config=\
 "
@@ -12,8 +12,8 @@ frontend web-frontend
         default_backend web-backend
 backend web-backend
         balance roundrobin
-        server 135370-web-01 54.166.170.221:80 check
-        server 135370-web-02 52.207.207.54:80 check
+        server 135370-web-01 100.26.122.31:80 check
+        server 135370-web-02 52.3.253.201:80 check
 "
 
 #checks if haproxy is enabled at boot time==>
@@ -35,9 +35,4 @@ then
     sudo bash -c "echo -en '$haproxy_config' >> '$CONFIG'"
 fi
 #checks if haproxy is already running if true restart, otherwise start.
-if [ "$(pgrep -c haproxy)" -le 0 ];
-then
-    sudo service haproxy start
-else
-    sudo service haproxy restart
-fi
+sudo service haproxy restart
